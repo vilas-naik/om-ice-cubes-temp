@@ -1,0 +1,25 @@
+{
+  "name": "final",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Vilas",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "markup-invoice-pdf": "^1.0.1",
+    "open": "^9.1.0",
+    "pdfjs": "^2.5.2",
+    "pdfkit": "^0.14.0",
+    "pdfkit-table": "^0.1.99",
+    "sqlite3": "^5.1.6",
+    "to-words": "^3.6.1"
+  }
+}

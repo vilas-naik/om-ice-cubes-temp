@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Om Ice Cubes | Print Preview</title>
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+        }
+        .exit{
+          position: relative;
+          width: 100vw;
+          height: auto;
+          display: grid;
+          justify-content: center;
+        }
+        .exitButton{
+          height: 100px;
+          width: 150px;
+          padding: 1em 2em;
+          text-align: center;
+          background-color: black;
+          color: white;
+          font-weight: 900;
+          border-radius: 25px;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <iframe
+        src="invoice.pdf"
+        frameborder="0"
+        height="700"
+        width="1690"
+        class="pdf"
+      ></iframe>
+    </div>
+    <div class="exit">
+      <a href="/exit" >
+        <button class="exitButton">EXIT</button>
+      </a>
+    </div>
+  </body>
+</html>
