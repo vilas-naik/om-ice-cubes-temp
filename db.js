@@ -3,7 +3,8 @@ const db = new sqlite3.Database('party_names.db');
 
 db.serialize(() => {
 
-    db.all(`INSERT INTO sample_pdf( bill_pdf BLOB);`, (err) => {
+    db.all(`ALTER TABLE printed_bills
+ADD bill_pdf BLOB;`, (err) => {
         if (err) {
             console.error(err.message);
         } else {
