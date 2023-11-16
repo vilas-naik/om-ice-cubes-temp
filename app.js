@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import sqlite3 from "sqlite3";
 import { ToWords } from 'to-words';
 import invoicePdf from "markup-invoice-pdf";
-import path,{dirname} from "path";
+import path, { dirname } from "path";
 import { fileURLToPath } from 'url';
 // import open from 'open';
 
@@ -12,7 +12,6 @@ const app = express();
 const port = 3000;
 const db = new sqlite3.Database('party_names.db');
 let pdfFile = "C:/vilas/Om Ice Cubes-Billing/public/" + "/invoice.pdf";
-let htmlFile = "finalTest.html";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // open(urlToOpen)
@@ -77,7 +76,7 @@ app.post('/print', (req, res) => {
             db.run(`INSERT INTO PRINTED_BILLS_BACKUP(date_added,party_name,gst,amount,tax,total,month)
 VALUES(?,?,?,?,?,?,?)`, [formattedToday, req.body.party, party_names[0].gst, amount, fakeTax, total, currentMonth]);
 
-            await invoicePdf(htmlFile, pdfFile, {
+            const pdfBuffer = await invoicePdf(htmlFile, null, {
                 name: req.body.party,
                 address: party_names[0].address,
                 gst: party_names[0].gst,
@@ -89,21 +88,25 @@ VALUES(?,?,?,?,?,?,?)`, [formattedToday, req.body.party, party_names[0].gst, amo
                 total: total,
                 date: formattedToday,
                 words: words
-            })
-            .then(function (pdfBuffer) {
-                res.setHeader('Content-Type', 'application/pdf');
-                res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
-                res.send(pdfBuffer);
-            })
-                .catch(function (err) {
-                    throw err;
+            });
+
+            // Update the database with the PDF content
+            db.run(`INSERT INTO party_names (party_name, address, gst, pdf_file)
+        VALUES (?, ?, ?, ?)`,
+                [req.body.party, party_names[0].address, party_names[0].gst, pdfBuffer],
+                (err) => {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log('PDF saved to the database');
                 });
 
-
-
+            // Send the PDF in the response
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
+            res.send(pdfBuffer);
         });
     });
-
 });
 
 app.listen(port, () => {
