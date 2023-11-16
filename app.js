@@ -35,7 +35,7 @@ app.get("/exit", (req, res) => {
     db.close();
     process.exit(0);
 })
-// 
+
 
 app.post('/print', (req, res) => {
     db.serialize(() => {
