@@ -90,9 +90,11 @@ VALUES(?,?,?,?,?,?,?)`, [formattedToday, req.body.party, party_names[0].gst, amo
                 date: formattedToday,
                 words: words
             })
-                .then(function (fileUrl) {
-                    res.render("printPreview");
-                })
+            .then(function (pdfBuffer) {
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
+                res.send(pdfBuffer);
+            })
                 .catch(function (err) {
                     throw err;
                 });
