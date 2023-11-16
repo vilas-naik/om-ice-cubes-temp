@@ -3,24 +3,23 @@ import bodyParser from "body-parser";
 import sqlite3 from "sqlite3";
 import { ToWords } from 'to-words';
 import invoicePdf from "markup-invoice-pdf";
-import path, { dirname } from "path";
-import { fileURLToPath } from 'url';
-// import open from 'open';
+import open from 'open';
 
-// const urlToOpen = "http://localhost:3000/";
+const urlToOpen = "http://localhost:3000/";
 const app = express();
 const port = 3000;
 const db = new sqlite3.Database('party_names.db');
-let pdfFile = "C:/vilas/Om Ice Cubes-Billing/public/" + "/invoice.pdf";
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const htmlFile = "finalTest.html";
+let pdfFile = "public/" + "/invoice.pdf";
+let invoice;
 
-// open(urlToOpen)
-//   .then(() => {
-//     console.log(`Opened ${urlToOpen} in the default web browser.`);
-//   })
-//   .catch((err) => {
-//     console.error(`Error opening ${urlToOpen}: ${err.message}`);
-//   });
+open(urlToOpen)
+  .then(() => {
+    console.log(`Opened ${urlToOpen} in the default web browser.`);
+  })
+  .catch((err) => {
+    console.error(`Error opening ${urlToOpen}: ${err.message}`);
+  });
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -33,12 +32,16 @@ app.get('/', (req, res) => {
 });
 
 app.get("/exit", (req, res) => {
+    db.close();
     process.exit(0);
 })
+// 
 
 app.post('/print', (req, res) => {
     db.serialize(() => {
-        db.all('SELECT * FROM party_names WHERE party_name=?', [req.body.party], async (err, rows) => {
+        db.all(`
+    SELECT * FROM party_names WHERE party_name=?;
+`, [req.body.party], (err, rows) => {
             if (err) {
                 throw err;
             }
@@ -73,41 +76,42 @@ app.post('/print', (req, res) => {
             let currentMonth = month[d.getMonth()];
 
 
-            db.run(`INSERT INTO PRINTED_BILLS_BACKUP(date_added,party_name,gst,amount,tax,total,month)
-VALUES(?,?,?,?,?,?,?)`, [formattedToday, req.body.party, party_names[0].gst, amount, fakeTax, total, currentMonth]);
 
-            const pdfBuffer = await invoicePdf(htmlFile, null, {
-                name: req.body.party,
-                address: party_names[0].address,
-                gst: party_names[0].gst,
-                quantity: req.body.quantity,
-                packOrKg: req.body.packOrKg,
-                rate: req.body.rate,
-                amount: amount,
-                tax: fakeTax,
-                total: total,
-                date: formattedToday,
-                words: words
-            });
+            db.all(`SELECT id 
+            FROM    printed_bills
+            WHERE   id = (SELECT MAX(id)  FROM printed_bills);`, async(err, rows) => {
+                if (err) {
+                    throw err;
+                }
+                invoice = rows[0].id;
+                
+            db.run(`INSERT INTO printed_bills(id,dateAdded,party_name,gst,amount,tax,total,month)
+            VALUES(?,?,?,?,?,?,?,?)`, [++invoice,formattedToday, req.body.party, party_names[0].gst, amount, fakeTax, total, currentMonth]);
+                    await invoicePdf(htmlFile, pdfFile, {
+                        id:invoice,
+                        name: req.body.party,
+                        address: party_names[0].address,
+                        gst: party_names[0].gst,
+                        quantity: req.body.quantity,
+                        packOrKg: req.body.packOrKg,
+                        rate: req.body.rate,
+                        amount: amount,
+                        tax: fakeTax,
+                        total: total,
+                        date: formattedToday,
+                        words: words
+                    });
+                    res.render("printPreview");
+            })
+            
+            
 
-            // Update the database with the PDF content
-            db.run(`INSERT INTO party_names (party_name, address, gst, pdf_file)
-        VALUES (?, ?, ?, ?)`,
-                [req.body.party, party_names[0].address, party_names[0].gst, pdfBuffer],
-                (err) => {
-                    if (err) {
-                        throw err;
-                    }
-                    console.log('PDF saved to the database');
-                });
-
-            // Send the PDF in the response
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
-            res.send(pdfBuffer);
         });
     });
 });
+
+
+// SELECT id FROM printed_bills WHERE id = (SELECT MAX(id) FROM printed_bills);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

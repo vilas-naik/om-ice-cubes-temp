@@ -174,14 +174,14 @@ body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0,
       }
       table.inventory th {
         outline: 1px solid black;
-        border: 1px solid black;
+        ;
         border-radius: 0;
         font-weight: bold;
         text-align: center;
       }
       table.inventory td {
         outline: 1px solid black;
-        border: 1px solid black;
+        ;
         border-radius: 0;
         height: 100px;
       }
@@ -212,7 +212,7 @@ body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0,
       table.balance th,
       table.balance td {
         outline: 1px solid black;
-        border: 1px solid black;
+        ;
         width: 50%;
       }
       table.balance td {
@@ -291,7 +291,7 @@ body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0,
         width: 66.6%;
         height: 117px;
         outline: 1px solid black;
-        border: 1px solid black;
+        ;
       }
       .words p {
         font-size: 1.1rem;
@@ -299,8 +299,8 @@ body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0,
       }
       /* *************Final Styling******* */
       .outer {
-        /* width: 210vw; */
-        width: 60vw;
+        width: 210vw;
+        /* width: 60vw; */
         height: 100vh;
         position: absolute;
         display: grid;
@@ -314,7 +314,7 @@ body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0,
         clear: both;
         width: 100%;
         outline: 1px solid black;
-        border: 1px solid black;
+        ;
         transform: translateY(-2.5px);
       }
       .customer-details p:nth-child(2),.customer-details p:nth-child(3),.customer-details p:nth-child(4) {
@@ -337,7 +337,6 @@ body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0,
         margin: 0;
         font-size: 1rem;
         outline: 1px solid black;
-        border:1px solid black;
       }
       .meta {
         width: 100%;
@@ -390,7 +389,7 @@ body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0,
                   </div>
                 </th>
                 <th class="meta-right"><span>Invoice</span></th>
-                <td class="meta-right"><span>%number%</span></td>
+                <td class="meta-right"><span>{{id}}</span></td>
               </tr>
               <tr>
                 <th class="meta-right"><span>Date</span></th>
@@ -470,28 +469,4 @@ body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0,
         </article>
       </div>
     </div>
-    <div id="editor"></div>
-    <div id="page"></div>
-    <button id="downloadBtn">Download as PDF</button>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.8.0/html2pdf.bundle.min.js" integrity="sha512-w3u9q/DeneCSwUDjhiMNibTRh/1i/gScBVp2imNVAMCt6cUHIw6xzhzcPFIaL3Q1EbI2l+nu17q2aLJJLo4ZYg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    <script>
-      document.getElementById('downloadBtn').addEventListener('click', () => {
-          // Get the HTML content
-          const content = document.querySelector(".container");
-
-          // Create a configuration object for html2pdf
-          const options = {
-              filename: 'output.pdf',
-              image: { type: 'png', quality: 10 },
-              html2canvas: { scale: 2 },
-              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-          };
-
-          // Use html2pdf to generate the PDF
-          html2pdf(content,options);
-      });
-  </script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.8.0/html2pdf.bundle.min.js" integrity="sha512-w3u9q/DeneCSwUDjhiMNibTRh/1i/gScBVp2imNVAMCt6cUHIw6xzhzcPFIaL3Q1EbI2l+nu17q2aLJJLo4ZYg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>  </body>
-</html>
+    </html>
