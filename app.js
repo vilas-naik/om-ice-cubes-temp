@@ -14,12 +14,12 @@ let pdfFile = "public/" + "/invoice.pdf";
 let invoice;
 
 open(urlToOpen)
-  .then(() => {
-    console.log(`Opened ${urlToOpen} in the default web browser.`);
-  })
-  .catch((err) => {
-    console.error(`Error opening ${urlToOpen}: ${err.message}`);
-  });
+    .then(() => {
+        console.log(`Opened ${urlToOpen} in the default web browser.`);
+    })
+    .catch((err) => {
+        console.error(`Error opening ${urlToOpen}: ${err.message}`);
+    });
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -44,6 +44,7 @@ app.post('/print', (req, res) => {
 `, [req.body.party], (err, rows) => {
             if (err) {
                 throw err;
+                res.redirect("/");
             }
             const party_names = rows;
             let amount = req.body.rate * req.body.quantity;
@@ -79,16 +80,18 @@ app.post('/print', (req, res) => {
 
             db.all(`SELECT id 
             FROM    printed_bills
-            WHERE   id = (SELECT MAX(id)  FROM printed_bills);`, async(err, rows) => {
+            WHERE   id = (SELECT MAX(id)  FROM printed_bills);`, async (err, rows) => {
                 if (err) {
                     throw err;
                 }
                 invoice = rows[0].id;
-                
-            db.run(`INSERT INTO printed_bills(id,dateAdded,party_name,gst,amount,tax,total,month)
-            VALUES(?,?,?,?,?,?,?,?)`, [++invoice,formattedToday, req.body.party, party_names[0].gst, amount, fakeTax, total, currentMonth]);
+
+               try {
+                db.run(`INSERT INTO printed_bills(id,dateAdded,party_name,gst,amount,tax,total,month)
+                VALUES(?,?,?,?,?,?,?,?)`, [++invoice, formattedToday, req.body.party, party_names[0].gst, amount, fakeTax*2, total, currentMonth]);
+    
                     await invoicePdf(htmlFile, pdfFile, {
-                        id:invoice,
+                        id: invoice,
                         name: req.body.party,
                         address: party_names[0].address,
                         gst: party_names[0].gst,
@@ -102,14 +105,17 @@ app.post('/print', (req, res) => {
                         words: words
                     });
                     res.render("printPreview");
-            })
-            
-            
+                
+               } catch (error) {
+                res.redirect("/");
+               }
+
+
 
         });
     });
 });
-
+});
 
 // SELECT id FROM printed_bills WHERE id = (SELECT MAX(id) FROM printed_bills);
 
